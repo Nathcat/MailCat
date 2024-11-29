@@ -10,7 +10,20 @@ import java.nio.charset.StandardCharsets;
 public class Command {
     public enum Type {
         EHLO,
-        MAIL
+        HELO,
+        MAIL,
+        RCPT,
+        DATA,
+        RSET,
+        SEND,
+        SOML,
+        SAML,
+        VRFY,
+        EXPN,
+        HELP,
+        NOOP,
+        QUIT,
+        TURN
     }
 
     public Type type;
@@ -18,13 +31,5 @@ public class Command {
 
     public Command(String[] lines) {
         this.lines = lines;
-    }
-
-    /**
-     * Build a response from this command
-     * @return The response to reply to the originator with
-     */
-    public String buildResponse() {
-        return null;
     }
 }

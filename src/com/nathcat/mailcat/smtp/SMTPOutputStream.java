@@ -25,13 +25,4 @@ public class SMTPOutputStream extends OutputStream {
     public void write(byte[] b) throws IOException {
         this.os.write(b);
     }
-
-    /**
-     * Write a command to the wrapped socket
-     * @param command The command to write
-     * @throws IOException Thrown in case of failed input / output operations
-     */
-    public void writeCommand(Command command) throws IOException {
-        this.os.write(command.buildResponse().getBytes(StandardCharsets.US_ASCII));
-    }
 }
