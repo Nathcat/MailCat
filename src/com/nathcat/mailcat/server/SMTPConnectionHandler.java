@@ -27,7 +27,7 @@ public class SMTPConnectionHandler extends Thread {
 
         @Override
         public String ehlo(EHLO c) {
-            return "250-" + SMTP.domain + " Hello from MailCat!" + SMTP.CRLF + "250-A" + SMTP.CRLF + "250 B" + SMTP.CRLF;
+            return "250 " + SMTP.domain + " Hello from MailCat!" + SMTP.CRLF;
         }
 
         @Override
