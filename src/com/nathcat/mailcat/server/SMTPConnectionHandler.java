@@ -1,24 +1,23 @@
 package com.nathcat.mailcat.server;
 
-import com.nathcat.mailcat.smtp.ICommandHandler;
-import com.nathcat.mailcat.smtp.SMTP;
-import com.nathcat.mailcat.smtp.SMTPInputStream;
-import com.nathcat.mailcat.smtp.SMTPOutputStream;
-import com.nathcat.mailcat.smtp.commands.Command;
-import com.nathcat.mailcat.smtp.commands.EHLO;
-import com.nathcat.mailcat.smtp.commands.HELO;
-import com.nathcat.mailcat.smtp.commands.QUIT;
+import com.nathcat.mailcat.smtp.*;
+import com.nathcat.mailcat.smtp.commands.*;
 import com.nathcat.mailcat.smtp.exceptions.CommandNotImplementedException;
 import com.nathcat.mailcat.smtp.exceptions.InvalidCommandTypeException;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Queue;
+import java.util.Stack;
 
 public class SMTPConnectionHandler extends Thread {
     private Socket s;
     private SMTPInputStream in;
     private SMTPOutputStream out;
+    private Stack<Command> commandStack;
+    private MailTransaction mailTransaction;
+
     private ICommandHandler handler = new ICommandHandler() {
         @Override
         public String helo(HELO c) {
@@ -33,6 +32,18 @@ public class SMTPConnectionHandler extends Thread {
         @Override
         public String quit(QUIT c) {
             return "221 OK" + SMTP.CRLF;
+        }
+
+        @Override
+        public String mail(MAIL c) {
+            if (mailTransaction != null) {
+                return "501 Mail transaction is already in progress." + SMTP.CRLF;
+            }
+
+            mailTransaction = new MailTransaction();
+            mailTransaction.initiator = c;
+
+            return "250 OK";
         }
     };
 
@@ -54,6 +65,7 @@ public class SMTPConnectionHandler extends Thread {
 
     @Override
     public void run() {
+        commandStack = new Stack<>();
         log("Got connection, waiting for command");
 
         try {
@@ -67,6 +79,7 @@ public class SMTPConnectionHandler extends Thread {
         while (true) {
             try {
                 Command command = in.readCommand();
+                commandStack.push(command);
 
                 log("Received command:\n" + command + "\n");
 

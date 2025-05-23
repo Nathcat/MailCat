@@ -82,28 +82,23 @@ public class SMTPInputStream extends InputStream {
 
         String content = new String(is.readNBytes(is.available()), StandardCharsets.US_ASCII);
 
-        if (code == 250) {
-            if (content.charAt(0) == '-') {
-                String[] lines = content.split(SMTP.CRLF);
-                List<String> linesStream = Arrays.stream(lines).toList();
-                String firstLine = linesStream.get(0).substring(1);
+        if (content.charAt(0) == '-') {
+            String[] lines = content.split(SMTP.CRLF);
+            List<String> linesStream = Arrays.stream(lines).toList();
+            String firstLine = linesStream.get(0).substring(1);
 
-                List<String> lastLine = Arrays.stream(linesStream.get(linesStream.size() - 1).split(SMTP.SP)).toList();
-                lastLine = lastLine.subList(1, lastLine.size());
+            List<String> lastLine = Arrays.stream(linesStream.get(linesStream.size() - 1).split(SMTP.SP)).toList();
+            lastLine = lastLine.subList(1, lastLine.size());
 
-                lines = linesStream.subList(1, linesStream.size() - 1).toArray(new String[0]);
-                return new Response(code, firstLine + SMTP.CRLF + String.join(
-                        SMTP.CRLF, List.of(lines)
-                                .stream().map(e -> e.substring(4)).toList().toArray(new String[0])
-                    ) + SMTP.CRLF + String.join(" ", lastLine)
-                );
-            }
-            else {
-                return new Response(code, content.trim());
-            }
+            lines = linesStream.subList(1, linesStream.size() - 1).toArray(new String[0]);
+            return new Response(code, firstLine + SMTP.CRLF + String.join(
+                    SMTP.CRLF, List.of(lines)
+                            .stream().map(e -> e.substring(4)).toList().toArray(new String[0])
+            ) + SMTP.CRLF + String.join(" ", lastLine)
+            );
         }
         else {
-            return new Response(code, content);
+            return new Response(code, content.trim());
         }
     }
 }

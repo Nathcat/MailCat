@@ -10,6 +10,7 @@ public interface ICommandHandler {
     String helo(HELO c);
     String ehlo(EHLO c);
     String quit(QUIT c);
+    String mail(MAIL c);
 
     /**
      * Handle a command received from the endpoint
@@ -22,7 +23,8 @@ public interface ICommandHandler {
             case HELO -> helo((HELO) c);
             case EHLO -> ehlo((EHLO) c);
             case QUIT -> quit((QUIT) c);
-            case MAIL, DATA, RCPT, RSET, SEND, SOML, SAML, VRFY, EXPN, HELP, NOOP, TURN -> throw new CommandNotImplementedException();
+            case MAIL -> mail((MAIL) c);
+            case DATA, RCPT, RSET, SEND, SOML, SAML, VRFY, EXPN, HELP, NOOP, TURN -> throw new CommandNotImplementedException();
         };
     }
 }
