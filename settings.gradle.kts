@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = "MailCat"
-include("app", "list", "utilities")
+include("SMTP", "SMTPServer")
